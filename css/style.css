@@ -1,0 +1,147 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  background: #f5f6fa;
+  color: #1e1f26;
+}
+
+header {
+  background: #2b2d42;
+  color: #fff;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+header p {
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+section {
+  margin-bottom: 3rem;
+}
+
+h2 {
+  border-bottom: 2px solid #ef233c;
+  padding-bottom: 0.5rem;
+}
+
+.demo-box {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+button {
+  background: #ef233c;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+button:hover {
+  background: #d90429;
+}
+
+/* --- 1. Types of Web Animation --- */
+
+/* CSS transition example */
+.btn-transition {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.btn-transition:hover {
+  transform: scale(1.1);
+  background-color: #2b2d42;
+}
+
+/* CSS keyframe animation example */
+.box-keyframe {
+  width: 60px;
+  height: 60px;
+  background: #ef233c;
+  border-radius: 8px;
+  margin-top: 1rem;
+  animation: bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+
+/* --- 2. Animation Principles: Easing --- */
+.track {
+  position: relative;
+  height: 100px;
+  margin-top: 1rem;
+}
+
+.ball {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+}
+
+.ball-linear {
+  top: 10px;
+  background: #4361ee;
+}
+
+.ball-easeout {
+  top: 60px;
+  background: #ef233c;
+}
+
+.ball-linear.run {
+  transition: transform 1.5s linear;
+  transform: translateX(600px);
+}
+
+.ball-easeout.run {
+  transition: transform 1.5s ease-out;
+  transform: translateX(600px);
+}
+
+/* --- 4. Technologies: JS-driven box --- */
+.box-js {
+  width: 60px;
+  height: 60px;
+  background: #4361ee;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+
+/* --- Guideline: respect reduced motion preference --- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

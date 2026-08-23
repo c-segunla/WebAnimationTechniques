@@ -1,0 +1,94 @@
+/* Base Page Layout */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Base Card State */
+.card {
+  width: 300px;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  outline: none;
+
+  /* Explicitly defining CSS Transitions for GPU-accelerated properties */
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s ease,
+              border-color 0.2s linear;
+  border: 2px solid transparent;
+}
+
+/* Card Elements */
+.card-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  
+  /* Transition for badge background and color */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card-title {
+  margin: 0 0 8px 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.card-description {
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.card-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+
+  /* Button Hover Transition */
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* --- TRIGGER STATES --- */
+
+/* Hover State for the Card */
+.card:hover, .card:focus-visible {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-color: #2563eb;
+}
+
+/* Hover State for the Badge when Card is Hovered */
+.card:hover .card-badge {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Hover State for the Internal Button */
+.card-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Active Click State for the Internal Button */
+.card-btn:active {
+  transform: scale(0.97);
+}
