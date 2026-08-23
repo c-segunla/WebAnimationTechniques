@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ITL303 - Demo 3: CSS 3D Transforms & matrix3d()</title>
+  <style>
+    /* ==========================================================================
+       ITL303: Web Animation Techniques - Module 2 (3D Transforms & Matrix)
+       ========================================================================== */
+
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --accent-hover: #0284c7;
+      --danger-color: #ef4444;
+      --danger-hover: #dc2626;
+      --text-color: #f8fafc;
+      --panel-bg: #1e293b;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: var(--accent-color);
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: #94a3b8;
+    }
+
+    .demo-container {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* --------------------------------------------------------------------------
+       Control Panel Styling
+       -------------------------------------------------------------------------- */
+    .control-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      color: #cbd5e1;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-color);
+      cursor: pointer;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    .checkbox-group input {
+      accent-color: var(--accent-color);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* Reset Button Style */
+    .btn-reset {
+      background-color: transparent;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 5px;
+    }
+
+    .btn-reset:hover {
+      background-color: var(--accent-color);
+      color: #0f172a;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-reset:active {
+      transform: scale(0.98);
+    }
+
+    .code-preview {
+      background-color: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.78rem;
+      color: #a7f3d0;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    /* --------------------------------------------------------------------------
+       3D Workspace / Stage Area
+       -------------------------------------------------------------------------- */
+    .stage-wrapper {
+      background: #141e33;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 480px;
+      position: relative;
+      overflow: hidden;
+      perspective: 800px;
+      perspective-origin: 50% 50%;
+    }
+
+    .stage-grid {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle, rgba(56, 189, 248, 0.15) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    /* --------------------------------------------------------------------------
+       Target 3D Card Element
+       -------------------------------------------------------------------------- */
+    .card-3d-wrapper {
+      width: 220px;
+      height: 300px;
+      position: relative;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.1s linear;
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      backface-visibility: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-front {
+      background: linear-gradient(135deg, #0284c7, #3b82f6);
+      color: #ffffff;
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      color: #ffffff;
+      transform: rotateY(180deg);
+    }
+
+    .card-face h3 {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+
+    .card-face p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>ITL303: CSS 3D Transforms & matrix3d()</h1>
+    <p>Explore perspective, 3D rotations, depth translation, preserve-3d, and backface visibility.</p>
+  </header>
+
+  <div class="demo-container">
+    
+    <div class="control-panel">
+      <h3>3D Interactive Debugger</h3>
+
+      <div class="control-group">
+        <label>Perspective (px): <span id="val-perspective">800px</span></label>
+        <input type="range" id="input-perspective" min="200" max="2000" value="800">
+      </div>
+
+      <div class="control-group">
+        <label>Rotate X (deg): <span id="val-rotX">0deg</span></label>
+        <input type="range" id="input-rotX" min="-180" max="180" value="0">
+      </div>
+
+      <div class="control-group">
+        <label>Rotate Y (deg): <span id="val-rotY">0deg</span></label>
+        <input type="range" id="input-rotY" min="-180" max="180" value="0">
+      </div>
+
+      <div class="control-group">
+        <label>Rotate Z (deg): <span id="val-rotZ">0deg</span></label>
+        <input type="range" id="input-rotZ" min="-180" max="180" value="0">
+      </div>
+
+      <div class="control-group">
+        <label>Translate Z (px): <span id="val-transZ">0px</span></label>
+        <input type="range" id="input-transZ" min="-200" max="200" value="0">
+      </div>
+
+      <hr style="border-color: var(--border-color); margin: 5px 0;">
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="chk-preserve3d" checked>
+        <label for="chk-preserve3d">transform-style: preserve-3d</label>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="chk-backface" checked>
+        <label for="chk-backface">backface-visibility: hidden</label>
+      </div>
+
+      <button type="button" class="btn-reset" id="btn-reset">↺ Reset to Default Position</button>
+
+      <div class="control-group" style="margin-top: 10px;">
+        <label>Generated CSS Code:</label>
+        <div class="code-preview" id="code-output">
+transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(0px);
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>Compiled matrix3d() Value:</label>
+        <div class="code-preview" id="matrix-output" style="color: #fde047;">
+matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-wrapper" id="stage">
+      <div class="stage-grid"></div>
+
+      <div class="card-3d-wrapper" id="card">
+        <div class="card-face card-front" id="card-front">
+          <span class="badge">Front</span>
+          <h3>Module 2</h3>
+          <p>CSS 3D Space & Coordinate Geometry</p>
+        </div>
+        <div class="card-face card-back" id="card-back">
+          <span class="badge">Back</span>
+          <h3>Flipped!</h3>
+          <p>backface-visibility determines if this side is visible when turned.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // --------------------------------------------------------------------------
+    // JavaScript Logic: Updating 3D CSS Styles in Real-time
+    // --------------------------------------------------------------------------
+    const stage = document.getElementById('stage');
+    const card = document.getElementById('card');
+    const cardFront = document.getElementById('card-front');
+    const cardBack = document.getElementById('card-back');
+
+    const inputPersp = document.getElementById('input-perspective');
+    const inputRotX = document.getElementById('input-rotX');
+    const inputRotY = document.getElementById('input-rotY');
+    const inputRotZ = document.getElementById('input-rotZ');
+    const inputTransZ = document.getElementById('input-transZ');
+
+    const chkPreserve3D = document.getElementById('chk-preserve3d');
+    const chkBackface = document.getElementById('chk-backface');
+    const btnReset = document.getElementById('btn-reset');
+
+    const valPersp = document.getElementById('val-perspective');
+    const valRotX = document.getElementById('val-rotX');
+    const valRotY = document.getElementById('val-rotY');
+    const valRotZ = document.getElementById('val-rotZ');
+    const valTransZ = document.getElementById('val-transZ');
+
+    const codeOutput = document.getElementById('code-output');
+    const matrixOutput = document.getElementById('matrix-output');
+
+    function updateTransforms() {
+      const p = inputPersp.value;
+      const rx = inputRotX.value;
+      const ry = inputRotY.value;
+      const rz = inputRotZ.value;
+      const tz = inputTransZ.value;
+
+      // Update text values
+      valPersp.textContent = p + 'px';
+      valRotX.textContent = rx + 'deg';
+      valRotY.textContent = ry + 'deg';
+      valRotZ.textContent = rz + 'deg';
+      valTransZ.textContent = tz + 'px';
+
+      // Apply Parent Perspective
+      stage.style.perspective = `${p}px`;
+
+      // Apply 3D Transform to Card
+      const transformString = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) translateZ(${tz}px)`;
+      card.style.transform = transformString;
+
+      // Toggle preserve-3d
+      card.style.transformStyle = chkPreserve3D.checked ? 'preserve-3d' : 'flat';
+
+      // Toggle backface-visibility
+      const bfVal = chkBackface.checked ? 'hidden' : 'visible';
+      cardFront.style.backfaceVisibility = bfVal;
+      cardBack.style.backfaceVisibility = bfVal;
+
+      // Display CSS String
+      codeOutput.textContent = `perspective: ${p}px;\ntransform: ${transformString};\ntransform-style: ${chkPreserve3D.checked ? 'preserve-3d' : 'flat'};\nbackface-visibility: ${bfVal};`;
+
+      // Compute and Display Compiled matrix3d() from the browser engine
+      const computedTransform = window.getComputedStyle(card).transform;
+      matrixOutput.textContent = computedTransform;
+    }
+
+    // Reset Function
+    function resetToDefault() {
+      inputPersp.value = 800;
+      inputRotX.value = 0;
+      inputRotY.value = 0;
+      inputRotZ.value = 0;
+      inputTransZ.value = 0;
+      chkPreserve3D.checked = true;
+      chkBackface.checked = true;
+      
+      // Re-apply values to element and code outputs
+      updateTransforms();
+    }
+
+    // Attach Event Listeners
+    [inputPersp, inputRotX, inputRotY, inputRotZ, inputTransZ].forEach(elem => {
+      elem.addEventListener('input', updateTransforms);
+    });
+
+    [chkPreserve3D, chkBackface].forEach(elem => {
+      elem.addEventListener('change', updateTransforms);
+    });
+
+    // Reset Button Event Listener
+    btnReset.addEventListener('click', resetToDefault);
+
+    // Initialize on load
+    updateTransforms();
+  </script>
+</body>
+</html>

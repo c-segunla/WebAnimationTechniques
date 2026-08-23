@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ITL303 - Module 4: CSS Keyframe Animations (demo6.html)</title>
+  <link rel="stylesheet" href="css/style3.css">
+</head>
+<body>
+
+  <header class="sky-header" id="skyHeader">
+    <div class="header-content">
+      <h1>ITL303: Web Animation Techniques</h1>
+      <p>Module 4 Demo: Pure CSS Keyframe Animations (<code>@keyframes</code>)</p>
+    </div>
+
+    <img id="bigcloud" alt="Big Cloud" class="cloud transformed-element cloud-1" height="154" src="https://www.kirupa.com/images/bigCloud.png" width="238">
+    <img id="bigcloud2" alt="Cloud 2" class="cloud transformed-element cloud-2" height="154" src="https://www.kirupa.com/images/bigCloud.png" width="238">
+
+    <div class="airplane-wrapper" id="airplane">
+      <img src="assets/airplane_nobg.png" alt="Flying Airplane" class="airplane-img">
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <div class="demo-grid">
+      
+      <section class="card">
+        <h2 class="card-title">
+          <span>🏀</span> Element 2: Squash & Stretch Bounce
+        </h2>
+        
+        <div class="bounce-stage">
+          <div class="bouncing-ball" id="bouncingBall"></div>
+          <div class="ball-shadow" id="ballShadow"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" onclick="toggleBounce()">Pause / Resume Bounce</button>
+          <button class="btn btn-secondary" onclick="toggleAirplane()">Pause / Resume Sky Flight</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">
+          <span>⚙️</span> CSS Keyframe Rules Breakdown
+        </h2>
+        <p style="font-size: 0.95rem; color: var(--text-muted);">
+          Keyframe animations transition an element smoothly through multiple intermediate keyframes (expressed in percentages <code>0%</code> to <code>100%</code>).
+        </p>
+
+        <div class="code-block">
+<span class="comment-tag">/* 1. Keyframes Definition */</span>
+<span class="property-tag">@keyframes</span> ballSquashBounce {
+  <span class="value-tag">0%</span>   { transform: translateY(-160px) scaleY(1.05); }
+  <span class="value-tag">50%</span>  { transform: translateY(0px) scaleY(0.65); } <span class="comment-tag">/* Squash */</span>
+  <span class="value-tag">100%</span> { transform: translateY(-160px) scaleY(1.05); }
+}
+
+<span class="comment-tag">/* 2. Applying Animation to Target Selector */</span>
+<span class="property-tag">.bouncing-ball</span> {
+  <span class="property-tag">animation-name</span>: <span class="value-tag">ballSquashBounce</span>;
+  <span class="property-tag">animation-duration</span>: <span class="value-tag">1.4s</span>;
+  <span class="property-tag">animation-timing-function</span>: <span class="value-tag">cubic-bezier(...)</span>;
+  <span class="property-tag">animation-iteration-count</span>: <span class="value-tag">infinite</span>;
+}
+        </div>
+      </section>
+
+    </div>
+
+    <section class="card" style="margin-top: 25px;">
+      <h2 class="card-title">
+        <span>✏️</span> Hands-on Practice: Student Guided Code Blocks
+      </h2>
+      <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px;">
+        Open <code>css/style3.css</code> in VS Code. Uncomment or modify the exercise CSS blocks to practice keyframe sub-properties.
+      </p>
+
+      <div class="code-block" style="border-left-color: var(--accent-green);">
+<span class="comment-tag">/* ==========================================================================
+   STUDENT EXERCISE 1: CUSTOM AIRPLANE FLIGHT PATH
+   Task: Modify animation-duration in style3.css to 6s and add pitch rotation.
+   ========================================================================== */</span>
+/*
+@keyframes customPlaneLoop {
+  0%   { left: -150px; transform: rotate(0deg); }
+  50%  { transform: translateY(-40px) rotate(-8deg); }
+  100% { left: 100%; transform: rotate(5deg); }
+}
+*/
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/script2.js"></script>
+</body>
+</html>

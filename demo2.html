@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITL303 - Module 2 Topic 1: 2D CSS Spatial Transforms</title>
+  <!-- Tailwind CSS CDN for modern responsive UI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons for clean controls -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* Grid Canvas Pattern */
+    .bg-grid-pattern {
+      background-size: 30px 30px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    }
+    
+    /* Center origin visual axis */
+    .axis-x {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(239, 35, 60, 0.35);
+      pointer-events: none;
+    }
+    
+    .axis-y {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(67, 97, 238, 0.35);
+      pointer-events: none;
+    }
+
+    /* Transform element smoothly when toggle enabled */
+    .smooth-transform {
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Custom range slider styling */
+    input[type=range] {
+      accent-color: #ef233c;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+  <!-- Navigation Header -->
+  <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="bg-red-500 text-white p-2 rounded-lg font-bold text-lg shadow-md">
+          ITL303
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-white leading-tight">Module 2: CSS Transforms &amp; Matrix</h1>
+          <p class="text-xs text-slate-400">Topic 1: 2D Spatial Transforms (<code class="text-red-400">translate</code>, <code class="text-blue-400">scale</code>, <code class="text-green-400">rotate</code>, <code class="text-amber-400">skew</code>)</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3 text-sm">
+        <a href="index.html" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-md transition text-slate-200 flex items-center gap-1.5">
+          <i class="fa-solid fa-house text-xs"></i> Module 1 Index
+        </a>
+        <a href="demo1.html" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-md transition text-slate-200 flex items-center gap-1.5">
+          <i class="fa-solid fa-cloud text-xs"></i> Demo 1
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Column: Interactive Controls (5 cols) -->
+    <div class="lg:col-span-5 space-y-6">
+
+      <!-- Presets Card -->
+      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-xl">
+        <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Quick Motion Presets
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <button onclick="applyPreset('hover')" class="px-3 py-2 bg-slate-700/70 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-600 transition hover:border-amber-400">
+            Hover Lift
+          </button>
+          <button onclick="applyPreset('pop')" class="px-3 py-2 bg-slate-700/70 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-600 transition hover:border-amber-400">
+            Pop Scale
+          </button>
+          <button onclick="applyPreset('badge')" class="px-3 py-2 bg-slate-700/70 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-600 transition hover:border-amber-400">
+            Sheared Badge
+          </button>
+          <button onclick="applyPreset('cardTilt')" class="px-3 py-2 bg-slate-700/70 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-600 transition hover:border-amber-400">
+            Card Tilt
+          </button>
+          <button onclick="applyPreset('spin')" class="px-3 py-2 bg-slate-700/70 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-600 transition hover:border-amber-400">
+            45° Diamond
+          </button>
+          <button onclick="resetTransforms()" class="px-3 py-2 bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-lg text-xs font-semibold border border-red-500/40 transition">
+            <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Transform Function Controls -->
+      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-xl space-y-5">
+        
+        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+          <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-red-400"></i> Transform Controls
+          </h2>
+          <label class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
+            <input type="checkbox" id="smoothToggle" onchange="toggleSmoothness()" class="rounded bg-slate-700 border-slate-600 text-red-500 focus:ring-0">
+            Smooth Transition
+          </label>
+        </div>
+
+        <!-- Translation (X & Y) -->
+        <div class="space-y-3 bg-slate-900/50 p-3.5 rounded-lg border border-slate-700/60">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-red-400 uppercase tracking-wide">
+              <i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> Translation (translate)
+            </span>
+            <span id="translateVal" class="text-xs font-mono text-slate-300">X: 0px, Y: 0px</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <label for="translateX">translateX</label>
+                <span id="txVal">0px</span>
+              </div>
+              <input type="range" id="translateX" min="-180" max="180" value="0" step="1" oninput="updateTransforms()" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <label for="translateY">translateY</label>
+                <span id="tyVal">0px</span>
+              </div>
+              <input type="range" id="translateY" min="-180" max="180" value="0" step="1" oninput="updateTransforms()" class="w-full">
+            </div>
+          </div>
+        </div>
+
+        <!-- Scale (X & Y) -->
+        <div class="space-y-3 bg-slate-900/50 p-3.5 rounded-lg border border-slate-700/60">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wide">
+              <i class="fa-solid fa-expand mr-1"></i> Scale (scale)
+            </span>
+            <label class="flex items-center gap-1.5 text-xs text-slate-400 cursor-pointer">
+              <input type="checkbox" id="lockAspect" onchange="toggleAspectLock()" class="rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-0" checked>
+              Lock Ratio
+            </label>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <label for="scaleX">scaleX</label>
+                <span id="sxVal">1.0</span>
+              </div>
+              <input type="range" id="scaleX" min="0.2" max="2.5" value="1.0" step="0.05" oninput="handleScaleInput('X')" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <label for="scaleY">scaleY</label>
+                <span id="syVal">1.0</span>
+              </div>
+              <input type="range" id="scaleY" min="0.2" max="2.5" value="1.0" step="0.05" oninput="handleScaleInput('Y')" class="w-full">
+            </div>
+          </div>
+        </div>
+
+        <!-- Rotation -->
+        <div class="space-y-3 bg-slate-900/50 p-3.5 rounded-lg border border-slate-700/60">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-green-400 uppercase tracking-wide">
+              <i class="fa-solid fa-rotate mr-1"></i> Rotation (rotate)
+            </span>
+            <span id="rotVal" class="text-xs font-mono text-slate-300">0 deg</span>
+          </div>
+          <div>
+            <input type="range" id="rotate" min="-360" max="360" value="0" step="1" oninput="updateTransforms()" class="w-full">
+          </div>
+        </div>
+
+        <!-- Skew (X & Y) -->
+        <div class="space-y-3 bg-slate-900/50 p-3.5 rounded-lg border border-slate-700/60">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wide">
+              <i class="fa-solid fa-square-full mr-1 transform skew-x-12"></i> Skew (skew)
+            </span>
+            <span id="skewVal" class="text-xs font-mono text-slate-300">X: 0deg, Y: 0deg</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <label for="skewX">skewX</label>
+                <span id="skxVal">0deg</span>
+              </div>
+              <input type="range" id="skewX" min="-75" max="75" value="0" step="1" oninput="updateTransforms()" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <label for="skewY">skewY</label>
+                <span id="skyVal">0deg</span>
+              </div>
+              <input type="range" id="skewY" min="-75" max="75" value="0" step="1" oninput="updateTransforms()" class="w-full">
+            </div>
+          </div>
+        </div>
+
+        <!-- Execution Order Switcher -->
+        <div class="pt-2 border-t border-slate-700">
+          <label for="transformOrder" class="block text-xs font-semibold text-slate-300 mb-1.5">
+            <i class="fa-solid fa-list-ol text-purple-400 mr-1"></i> Function Order (CSS Matrix Multiplication Rule):
+          </label>
+          <select id="transformOrder" onchange="updateTransforms()" class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-purple-500">
+            <option value="T-R-S-K">1. Translate → Rotate → Scale → Skew (Default standard)</option>
+            <option value="R-T-S-K">2. Rotate → Translate → Scale → Skew (Rotated Translate Axis)</option>
+            <option value="S-T-R-K">3. Scale → Translate → Rotate → Skew</option>
+            <option value="K-R-S-T">4. Skew → Rotate → Scale → Translate</option>
+          </select>
+          <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+            <strong class="text-purple-300">Key Takeaway:</strong> In CSS, transform functions are evaluated from <em>right to left</em> during matrix multiplication. Changing function order dramatically changes the element's final position!
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Column: Interactive Stage & Code Output (7 cols) -->
+    <div class="lg:col-span-7 space-y-6 flex flex-col">
+
+      <!-- Interactive Canvas / Spatial Viewport -->
+      <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-xl overflow-hidden flex-1 flex flex-col min-h-[380px] relative">
+        
+        <!-- Viewport Header Toolbar -->
+        <div class="bg-slate-900/80 px-4 py-3 border-b border-slate-700 flex items-center justify-between text-xs text-slate-400">
+          <span class="font-semibold text-slate-200 flex items-center gap-2">
+            <i class="fa-solid fa-crosshairs text-red-400"></i> Spatial Coordinate Canvas (Center = 0,0)
+          </span>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="showGhost" onchange="toggleGhost()" class="rounded bg-slate-700 border-slate-600 text-red-500 focus:ring-0" checked>
+              Show Ghost Reference
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="showAxes" onchange="toggleAxes()" class="rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-0" checked>
+              Show Axes
+            </label>
+          </div>
+        </div>
+
+        <!-- The Canvas Stage Area -->
+        <div class="flex-1 bg-slate-950 bg-grid-pattern relative flex items-center justify-center overflow-hidden p-8">
+          
+          <!-- Coordinate Axes Overlay -->
+          <div id="axesContainer" class="absolute inset-0 pointer-events-none">
+            <div class="axis-x"></div>
+            <div class="axis-y"></div>
+            <span class="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] text-blue-400 font-mono">+Y Axis (Down)</span>
+            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-red-400 font-mono">+X Axis (Right)</span>
+            <span class="absolute top-[51%] left-[51%] text-[10px] text-slate-500 font-mono">(0,0)</span>
+          </div>
+
+          <!-- Ghost Element (Original Untransformed Bounds) -->
+          <div id="ghostBox" class="w-36 h-36 border-2 border-dashed border-slate-600 rounded-xl absolute pointer-events-none flex items-center justify-center bg-slate-800/20">
+            <span class="text-[10px] font-mono text-slate-500">Original (144x144)</span>
+          </div>
+
+          <!-- Main Transformed Target Card -->
+          <div id="targetBox" class="w-36 h-36 bg-gradient-to-tr from-red-600 via-indigo-600 to-blue-500 rounded-xl shadow-2xl p-4 flex flex-col justify-between items-center text-white select-none relative z-10 cursor-grab active:cursor-grabbing border border-white/20">
+            
+            <!-- Target Card Content -->
+            <div class="w-full flex justify-between items-center text-xs opacity-80">
+              <i class="fa-solid fa-shapes text-sm"></i>
+              <span class="font-mono text-[10px] bg-black/40 px-1.5 py-0.5 rounded">2D Spatial</span>
+            </div>
+            
+            <div class="text-center my-auto">
+              <div class="font-extrabold text-sm tracking-wide">ITL303 BOX</div>
+              <p id="boxTransformStatus" class="text-[10px] text-slate-200/80 font-mono mt-0.5">Identity (0,0)</p>
+            </div>
+
+            <div class="w-full flex justify-between text-[9px] font-mono opacity-60">
+              <span>(x,y)</span>
+              <i class="fa-solid fa-arrows-spin"></i>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Live CSS Output & Matrix Breakdown -->
+      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-xl space-y-4">
+        
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-code text-green-400"></i> Generated CSS &amp; Matrix Equivalents
+          </h2>
+          <button onclick="copyCSS()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold text-slate-200 rounded-md transition flex items-center gap-1.5 border border-slate-600">
+            <i class="fa-regular fa-copy" id="copyIcon"></i> <span id="copyText">Copy CSS</span>
+          </button>
+        </div>
+
+        <!-- CSS Snippet Box -->
+        <div class="bg-slate-950 p-4 rounded-lg font-mono text-xs text-slate-200 border border-slate-800 space-y-2 overflow-x-auto">
+          <div>
+            <span class="text-purple-400">.transformed-element</span> {
+          </div>
+          <div class="pl-4">
+            <span class="text-red-400">transform</span>: <span id="cssOutput" class="text-amber-300">none</span>;
+          </div>
+          <div class="pl-4 text-slate-500">
+            /* Browser Compiled 2D Affine Matrix matrix(a, b, c, d, tx, ty) */
+          </div>
+          <div class="pl-4">
+            <span class="text-blue-400">/* matrix */</span> <span id="matrixOutput" class="text-slate-400">matrix(1, 0, 0, 1, 0, 0)</span>;
+          </div>
+          <div>}</div>
+        </div>
+
+        <!-- Educational Explanation Card -->
+        <div class="bg-slate-900/60 p-3.5 rounded-lg border border-slate-700/80 text-xs text-slate-300 leading-relaxed">
+          <strong class="text-amber-400"><i class="fa-solid fa-lightbulb mr-1"></i> Module 2 Concept Check:</strong>
+          <span id="explanationText">
+            The element is currently in its default identity state (no transforms applied). Adjust the sliders above to apply spatial manipulations.
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    // State variables
+    let state = {
+      tx: 0,
+      ty: 0,
+      sx: 1.0,
+      sy: 1.0,
+      rot: 0,
+      skx: 0,
+      sky: 0,
+      order: "T-R-S-K",
+      lockAspect: true,
+      smooth: false,
+      showGhost: true,
+      showAxes: true
+    };
+
+    // DOM References
+    const targetBox = document.getElementById("targetBox");
+    const ghostBox = document.getElementById("ghostBox");
+    const axesContainer = document.getElementById("axesContainer");
+    const cssOutput = document.getElementById("cssOutput");
+    const matrixOutput = document.getElementById("matrixOutput");
+    const boxTransformStatus = document.getElementById("boxTransformStatus");
+    const explanationText = document.getElementById("explanationText");
+
+    // Slider inputs
+    const translateXInput = document.getElementById("translateX");
+    const translateYInput = document.getElementById("translateY");
+    const scaleXInput = document.getElementById("scaleX");
+    const scaleYInput = document.getElementById("scaleY");
+    const rotateInput = document.getElementById("rotate");
+    const skewXInput = document.getElementById("skewX");
+    const skewYInput = document.getElementById("skewY");
+    const transformOrderSelect = document.getElementById("transformOrder");
+
+    // Value Labels
+    const txVal = document.getElementById("txVal");
+    const tyVal = document.getElementById("tyVal");
+    const sxVal = document.getElementById("sxVal");
+    const syVal = document.getElementById("syVal");
+    const rotVal = document.getElementById("rotVal");
+    const skxVal = document.getElementById("skxVal");
+    const skyVal = document.getElementById("skyVal");
+    const translateVal = document.getElementById("translateVal");
+    const skewVal = document.getElementById("skewVal");
+
+    // Lock aspect ratio handler
+    function handleScaleInput(axis) {
+      if (state.lockAspect) {
+        if (axis === 'X') {
+          scaleYInput.value = scaleXInput.value;
+        } else {
+          scaleXInput.value = scaleYInput.value;
+        }
+      }
+      updateTransforms();
+    }
+
+    function toggleAspectLock() {
+      state.lockAspect = document.getElementById("lockAspect").checked;
+      if (state.lockAspect) {
+        scaleYInput.value = scaleXInput.value;
+        updateTransforms();
+      }
+    }
+
+    function toggleSmoothness() {
+      state.smooth = document.getElementById("smoothToggle").checked;
+      if (state.smooth) {
+        targetBox.classList.add("smooth-transform");
+      } else {
+        targetBox.classList.remove("smooth-transform");
+      }
+    }
+
+    function toggleGhost() {
+      state.showGhost = document.getElementById("showGhost").checked;
+      ghostBox.style.display = state.showGhost ? "flex" : "none";
+    }
+
+    function toggleAxes() {
+      state.showAxes = document.getElementById("showAxes").checked;
+      axesContainer.style.display = state.showAxes ? "block" : "none";
+    }
+
+    // Master update function
+    function updateTransforms() {
+      // Read current values
+      state.tx = parseInt(translateXInput.value);
+      state.ty = parseInt(translateYInput.value);
+      state.sx = parseFloat(scaleXInput.value);
+      state.sy = parseFloat(scaleYInput.value);
+      state.rot = parseInt(rotateInput.value);
+      state.skx = parseInt(skewXInput.value);
+      state.sky = parseInt(skewYInput.value);
+      state.order = transformOrderSelect.value;
+
+      // Update UI slider labels
+      txVal.textContent = `${state.tx}px`;
+      tyVal.textContent = `${state.ty}px`;
+      sxVal.textContent = state.sx.toFixed(2);
+      syVal.textContent = state.sy.toFixed(2);
+      rotVal.textContent = `${state.rot}deg`;
+      skxVal.textContent = `${state.skx}deg`;
+      skyVal.textContent = `${state.sky}deg`;
+
+      translateVal.textContent = `X: ${state.tx}px, Y: ${state.ty}px`;
+      skewVal.textContent = `X: ${state.skx}deg, Y: ${state.sky}deg`;
+
+      // Build CSS Transform string based on chosen function order
+      const tStr = `translate(${state.tx}px, ${state.ty}px)`;
+      const rStr = `rotate(${state.rot}deg)`;
+      const sStr = `scale(${state.sx}, ${state.sy})`;
+      const kStr = `skew(${state.skx}deg, ${state.sky}deg)`;
+
+      let transformChain = [];
+
+      switch (state.order) {
+        case "R-T-S-K":
+          transformChain = [rStr, tStr, sStr, kStr];
+          break;
+        case "S-T-R-K":
+          transformChain = [sStr, tStr, rStr, kStr];
+          break;
+        case "K-R-S-T":
+          transformChain = [kStr, rStr, sStr, tStr];
+          break;
+        case "T-R-S-K":
+        default:
+          transformChain = [tStr, rStr, sStr, kStr];
+          break;
+      }
+
+      // Filter out identity transform strings for cleaner CSS display
+      const activeTransforms = transformChain.filter(fn => {
+        if (fn.startsWith("translate") && state.tx === 0 && state.ty === 0) return false;
+        if (fn.startsWith("rotate") && state.rot === 0) return false;
+        if (fn.startsWith("scale") && state.sx === 1 && state.sy === 1) return false;
+        if (fn.startsWith("skew") && state.skx === 0 && state.sky === 0) return false;
+        return true;
+      });
+
+      const fullTransformCSS = activeTransforms.length > 0 ? activeTransforms.join(" ") : "none";
+
+      // Apply style to DOM element
+      targetBox.style.transform = fullTransformCSS;
+
+      // Update Code Displays
+      cssOutput.textContent = fullTransformCSS;
+      boxTransformStatus.textContent = activeTransforms.length > 0 ? `${state.tx}px, ${state.ty}px | ${state.rot}°` : "Identity (0,0)";
+
+      // Get compiled 2D matrix from computed style
+      setTimeout(() => {
+        const computedStyle = window.getComputedStyle(targetBox);
+        const matrixVal = computedStyle.transform || computedStyle.webkitTransform;
+        matrixOutput.textContent = matrixVal !== "none" ? matrixVal : "matrix(1, 0, 0, 1, 0, 0)";
+      }, 50);
+
+      // Educational Dynamic Description
+      generateEducationalNote();
+    }
+
+    // Dynamic explanation generator
+    function generateEducationalNote() {
+      let notes = [];
+      if (state.tx !== 0 || state.ty !== 0) {
+        notes.push(`Translating moves the element along the X (${state.tx}px) and Y (${state.ty}px) axes without triggering DOM recalculations or layout reflow.`);
+      }
+      if (state.sx !== 1 || state.sy !== 1) {
+        notes.push(`Scaling resizes the element (${state.sx}x, ${state.sy}x) relative to its default transform-origin (center).`);
+      }
+      if (state.rot !== 0) {
+        notes.push(`Rotating spins the element by ${state.rot}° around its center z-axis.`);
+      }
+      if (state.skx !== 0 || state.sky !== 0) {
+        notes.push(`Skewing distorts the coordinate plane by slanting lines (${state.skx}° horizontally, ${state.sky}° vertically).`);
+      }
+
+      if (notes.length === 0) {
+        explanationText.innerHTML = "The element is currently in its default <strong>identity matrix state</strong> (no transforms applied).";
+      } else {
+        explanationText.innerHTML = notes.join(" ");
+      }
+    }
+
+    // Preset Applicator
+    function applyPreset(name) {
+      resetSlidersOnly();
+
+      switch (name) {
+        case "hover":
+          translateYInput.value = -25;
+          scaleXInput.value = 1.08;
+          scaleYInput.value = 1.08;
+          break;
+        case "pop":
+          scaleXInput.value = 1.4;
+          scaleYInput.value = 1.4;
+          break;
+        case "badge":
+          skewXInput.value = -18;
+          rotateInput.value = 5;
+          break;
+        case "cardTilt":
+          rotateInput.value = -12;
+          scaleXInput.value = 1.05;
+          scaleYInput.value = 1.05;
+          translateXInput.value = 15;
+          translateYInput.value = -10;
+          break;
+        case "spin":
+          rotateInput.value = 45;
+          break;
+      }
+
+      updateTransforms();
+    }
+
+    function resetSlidersOnly() {
+      translateXInput.value = 0;
+      translateYInput.value = 0;
+      scaleXInput.value = 1.0;
+      scaleYInput.value = 1.0;
+      rotateInput.value = 0;
+      skewXInput.value = 0;
+      skewYInput.value = 0;
+    }
+
+    function resetTransforms() {
+      resetSlidersOnly();
+      transformOrderSelect.value = "T-R-S-K";
+      updateTransforms();
+    }
+
+    // Copy CSS to Clipboard
+    function copyCSS() {
+      const codeToCopy = `transform: ${cssOutput.textContent};`;
+      
+      // Fallback copy execution for iFrame safety
+      const textArea = document.createElement("textarea");
+      textArea.value = codeToCopy;
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        const copyIcon = document.getElementById("copyIcon");
+        const copyText = document.getElementById("copyText");
+
+        copyIcon.className = "fa-solid fa-check text-green-400";
+        copyText.textContent = "Copied!";
+
+        setTimeout(() => {
+          copyIcon.className = "fa-regular fa-copy";
+          copyText.textContent = "Copy CSS";
+        }, 2000);
+      } catch (err) {
+        console.error("Unable to copy", err);
+      }
+      
+      document.body.removeChild(textArea);
+    }
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", () => {
+      updateTransforms();
+    });
+  </script>
+</body>
+</html>

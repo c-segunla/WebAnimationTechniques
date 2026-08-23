@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITL303 - Web Animation Demo</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>ITL303: Web Animation Techniques</h1>
+    <p>Module 1 Demo — Types, Principles, Guidelines &amp; Technologies</p>
+  </header>
+
+  <main>
+
+    <!-- Section 1: Types of Web Animation -->
+    <section id="types">
+      <h2>1. Types of Web Animation</h2>
+
+      <div class="demo-box">
+        <h3>CSS Transition</h3>
+        <button class="btn-transition">Hover Me</button>
+      </div>
+
+      <div class="demo-box">
+        <h3>CSS Keyframe Animation</h3>
+        <div class="box-keyframe"></div>
+      </div>
+    </section>
+
+    <!-- Section 2: Animation Principles -->
+    <section id="principles">
+      <h2>2. Animation Principles for the Web</h2>
+      <div class="demo-box">
+        <h3>Easing (Ease-out vs Linear)</h3>
+        <div class="track">
+          <div class="ball ball-linear"></div>
+          <div class="ball ball-easeout"></div>
+        </div>
+        <button class="btn-run">Run Balls</button>
+      </div>
+    </section>
+
+    <!-- Section 3: Guidelines -->
+    <section id="guidelines">
+      <h2>3. Guidelines for Better Web Animation</h2>
+      <div class="demo-box">
+        <p>This demo respects <code>prefers-reduced-motion</code>. Try enabling
+          "Reduce Motion" in your OS accessibility settings and reload the page.</p>
+      </div>
+    </section>
+
+    <!-- Section 4: Technologies -->
+    <section id="technologies">
+      <h2>4. Technologies for Creating Web Animations</h2>
+      <div class="demo-box">
+        <h3>JavaScript-driven Animation</h3>
+        <div class="box-js"></div>
+        <button class="btn-js">Animate with JS</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>ITL303 Demo Project</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<html>
+    <title>Demo 5</title>
+    <body class="centralized">
+       <div class="wrap-elements">
+        <button class="btn">
+        Hello World
+        </button>
+        <input class="txtbox"/>
+       </div> 
+
+</body>
+</html>
+
+<style>
+  .btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    background: slateblue;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1;
+    opacity: 0.2; /* initial state */
+    transition: transform 250ms ease 0.3s,
+                opacity 400ms;  
+  }
+  .btn:hover {
+    transform: translate(0px,-30px); 
+     opacity: 1; /*final state */
+  }
+  .txtbox {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+    outline: none;    
+    width:200px; 
+    height:30px;
+    transition: transform 250ms ease 0.1ms;
+  }
+  .txtbox:focus {
+    transform: scale(1.5);
+  }
+  .centralized {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .wrap-elements{
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;              
+    align-items: center;   
+    justify-content: center;
+  }
+    
+
+ 
+</style>

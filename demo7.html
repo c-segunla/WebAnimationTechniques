@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ITL303 - Module 4: Keyframe Syntax & Sub-Properties (demo7.html)</title>
+  
+  <style>
+    /* ==========================================================================
+       1. LESSON THEME & LAYOUT STYLES
+       ========================================================================== */
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --primary-cyan: #38bdf8;
+      --accent-orange: #f97316;
+      --accent-pink: #f472b6;
+      --accent-green: #10b981;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.6;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 35px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: var(--primary-cyan);
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      color: var(--primary-cyan);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Stage Area for Demonstrating Motion */
+    .stage {
+      height: 160px;
+      background-color: #090d16;
+      border-radius: 8px;
+      border: 1px dashed var(--text-muted);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    /* Target Box for Testing Properties */
+    .demo-box {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+
+      /* MANDATORY CORE PROPERTIES TO RUN AN ANIMATION */
+      animation-name: slideAndRotate;
+      animation-duration: 3s;
+
+      /* ==========================================================================
+        LESSON STEPS 
+         ========================================================================== */
+
+      /* --------------------------------------------------------------------------
+         STEP 1: TIMING FUNCTIONS (EASING)
+         Uncomment one timing-function to show acceleration curve differences:
+         -------------------------------------------------------------------------- */
+      /* animation-timing-function: linear; 
+      /* animation-timing-function: ease-in-out; */
+       /*animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);*//* Overshoot / Bounce back */
+      /* animation-timing-function: steps(5, end);                        /* Stepwise jump execution */
+
+
+      /* --------------------------------------------------------------------------
+         STEP 2: ITERATION COUNT & DIRECTION
+         Uncomment to demonstrate looping and direction reversals:
+         -------------------------------------------------------------------------- */
+      /* animation-iteration-count: infinite;  */
+      /* animation-iteration-count: 2;  */
+      /* animation-direction: reverse; */
+      /* animation-direction: alternate;      Smooth back-and-forth ping-pong */
+
+
+      /* --------------------------------------------------------------------------
+         STEP 3: DELAY & FILL MODE
+         Notice what happens during the 2s delay BEFORE start and AFTER completion:
+         -------------------------------------------------------------------------- */
+      /*animation-delay: 3s;*/ 
+      /* animation-fill-mode: none; */       /* Default: returns to un-animated CSS state */
+      /* animation-fill-mode: forwards; */   /* Retains 100% keyframe state when done */
+      /* animation-fill-mode: backwards;  Applies 0% keyframe state during delay */
+      /* animation-fill-mode: both;       Applies backwards + forwards rules */
+    }
+
+    /* Class toggled via JS for pause/resume discussion */
+    .paused {
+      animation-play-state: paused !important;
+    }
+
+    /* Code Display Styling */
+    .code-block {
+      background-color: #090d16;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: var(--primary-cyan);
+      overflow-x: auto;
+      border-left: 3px solid var(--accent-orange);
+    }
+
+    .tag-prop { color: var(--accent-pink); }
+    .tag-val { color: var(--accent-green); }
+    .tag-comment { color: var(--text-muted); font-style: italic; }
+
+    /* Controls */
+    .btn {
+      background-color: var(--primary-cyan);
+      color: #0f172a;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       2. KEYFRAME DEFINITIONS
+       ========================================================================== */
+
+    /* Basic Syntax 1: Percentage-based Multi-step Keyframes */
+    @keyframes slideAndRotate {
+      0% {
+        transform: translateX(0px) rotate(0deg);
+        background: linear-gradient(135deg, #f97316, #f472b6);
+      }
+      50% {
+        transform: translateX(250px) rotate(180deg) scale(1.2);
+        background: linear-gradient(135deg, #38bdf8, #818cf8);
+      }
+      100% {
+        transform: translateX(500px) rotate(360deg);
+        background: linear-gradient(135deg, #10b981, #059669);
+      }
+    }
+
+    /* Basic Syntax 2: Keywords (from / to) Shorthand */
+    @keyframes simpleFade {
+      from {
+        opacity: 0.2;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+    }
+
+    .simple-box {
+      width: 50px;
+      height: 50px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      animation: simpleFade 1.5s ease-in-out infinite alternate;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>ITL303: Web Animation Techniques</h1>
+      <p>Module 4 Lab Demo (<code>demo7.html</code>) – CSS Keyframe Syntax & Sub-Properties</p>
+    </header>
+
+    <div class="demo-grid">
+
+      <section class="card">
+        <h2><span>🧪</span> Step-by-Step Sub-Property Execution Lab</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+          Open <code>demo7.html</code> in VS Code. Uncomment the rules inside <code>.demo-box</code> one step at a time to differentiate execution behavior.
+        </p>
+
+        <div class="stage">
+          <div class="demo-box" id="targetBox"></div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button class="btn" onclick="togglePause()">Pause / Play Animation</button>
+          <button class="btn" style="background-color: #475569; color: white;" onclick="restartAnimation()">Restart Animation</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><span>📜</span> Keyframe Syntax Structure</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+          Compare percentage stops (<code>0% - 100%</code>) versus keyword stops (<code>from / to</code>).
+        </p>
+
+        <div class="stage" style="justify-content: center;">
+          <div class="simple-box"></div>
+        </div>
+
+        <div class="code-block">
+<span class="tag-comment">/* Keyword Syntax (2 States) */</span>
+<span class="tag-prop">@keyframes</span> simpleFade {
+  <span class="tag-val">from</span> { opacity: 0.2; }
+  <span class="tag-val">to</span>   { opacity: 1.0; }
+}
+
+<span class="tag-comment">/* Percentage Syntax (Multi-stage) */</span>
+<span class="tag-prop">@keyframes</span> slideAndRotate {
+  <span class="tag-val">0%</span>   { transform: translateX(0px); }
+  <span class="tag-val">50%</span>  { transform: translateX(250px); }
+  <span class="tag-val">100%</span> { transform: translateX(500px); }
+}
+        </div>
+      </section>
+
+    </div>
+
+    <section class="card">
+      <h2><span>📚</span> CSS Animation Sub-Properties Summary Reference</h2>
+      
+      <div class="code-block" style="border-left-color: var(--primary-cyan);">
+<span class="tag-prop">animation-name</span>: <span class="tag-val">slideAndRotate</span>;         <span class="tag-comment">/* Binds the @keyframes rule name */</span>
+<span class="tag-prop">animation-duration</span>: <span class="tag-val">3s</span>;                 <span class="tag-comment">/* Time to complete 1 cycle (e.g. 3s, 500ms) */</span>
+<span class="tag-prop">animation-timing-function</span>: <span class="tag-val">ease-in-out</span>;  <span class="tag-comment">/* Acceleration curve (linear, ease, cubic-bezier, steps) */</span>
+<span class="tag-prop">animation-delay</span>: <span class="tag-val">2s</span>;                    <span class="tag-comment">/* Wait time before execution starts */</span>
+<span class="tag-prop">animation-iteration-count</span>: <span class="tag-val">infinite</span>;    <span class="tag-comment">/* Number of repeats (integer or 'infinite') */</span>
+<span class="tag-prop">animation-direction</span>: <span class="tag-val">alternate</span>;         <span class="tag-comment">/* Motion direction (normal, reverse, alternate, alternate-reverse) */</span>
+<span class="tag-prop">animation-fill-mode</span>: <span class="tag-val">forwards</span>;          <span class="tag-comment">/* Style applied before start / after end (none, forwards, backwards, both) */</span>
+<span class="tag-prop">animation-play-state</span>: <span class="tag-val">running</span>;          <span class="tag-comment">/* Controls runtime playback (running | paused) */</span>
+
+<span class="tag-comment">/* Shorthand Syntax Order: */</span>
+<span class="tag-prop">animation</span>: <span class="tag-val">slideAndRotate 3s ease-in-out 2s infinite alternate forwards</span>;
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Pause / Resume runtime execution toggle
+    function togglePause() {
+      const box = document.getElementById('targetBox');
+      box.classList.toggle('paused');
+    }
+
+    // Force animation reset for classroom demonstration
+    function restartAnimation() {
+      const box = document.getElementById('targetBox');
+      box.style.animation = 'none';
+      box.offsetHeight; /* Trigger DOM reflow */
+      box.style.animation = null;
+    }
+  </script>
+</body>
+</html>
