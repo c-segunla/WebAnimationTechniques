@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ITL303 - Week 9: SVG Animation & Transformations</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 { margin-bottom: 0.25rem; font-size: 1.5rem; color: #f8fafc; }
+    p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 2rem; }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 960px;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      border: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card h2 { font-size: 1rem; color: #38bdf8; margin: 0 0 0.75rem 0; }
+    svg {
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    /* Technique 1: CSS Path Drawing (stroke-dashoffset) */
+    .draw-path {
+      stroke-dasharray: 300;
+      stroke-dashoffset: 300;
+      animation: drawLine 3s ease-in-out infinite alternate;
+    }
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Week 9 Demo: SVG Animation & Transformations</h1>
+  <p>ITL303 Web Animation Techniques — Declarative SMIL & CSS Vector Motion</p>
+
+  <div class="demo-grid">
+    
+    <!-- 1. Attribute & Stroke Property Animation -->
+    <div class="card">
+      <h2>1. Attribute & Stroke Motion</h2>
+      <svg width="240" height="180" viewBox="0 0 240 180">
+        <!-- SMIL <animate>: Pulsing radius & fill color -->
+        <circle cx="120" cy="70" r="25" fill="#38bdf8">
+          <animate attributeName="r" values="25; 40; 25" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="fill" values="#38bdf8; #ec4899; #38bdf8" dur="3s" repeatCount="indefinite" />
+        </circle>
+        
+        <!-- CSS Line Drawing using stroke-dasharray & offset -->
+        <path class="draw-path" d="M 30 140 Q 100 120 210 140" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" />
+      </svg>
+    </div>
+
+    <!-- 2. Spatial Transformations (<animateTransform>) -->
+    <div class="card">
+      <h2>2. Vector Transformations</h2>
+      <svg width="240" height="180" viewBox="0 0 240 180">
+        <g transform="translate(120, 90)">
+          <!-- Outer Polygon Rotation -->
+          <polygon points="0,-40 35,20 -35,20" fill="none" stroke="#a855f7" stroke-width="1">
+            <animateTransform 
+              attributeName="transform" 
+              type="rotate" 
+              from="0" 
+              to="180" 
+              dur="5s" 
+              repeatCount="indefinite" />
+          </polygon>
+          
+          <!-- Inner Rect Scale Pulse -->
+          <rect x="-12" y="-12" width="24" height="24" fill="#22c55e" rx="4">
+            <animateTransform 
+              attributeName="transform" 
+              type="scale" 
+              values="1; 1.5; 1" 
+              dur="2.5s" 
+              repeatCount="indefinite" />
+          </rect>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 3. Trajectory Motion (<animateMotion> & <mpath>) -->
+    <div class="card">
+      <h2>3. Path Trajectory Motion</h2>
+      <svg width="240" height="180" viewBox="0 0 240 180">
+        <!-- Visual Guide Path -->
+        <path id="flightPath" d="M 30 90 C 70 20, 170 160, 210 90" fill="none" stroke="#334155" stroke-width="2" stroke-dasharray="4 4" />
+        
+        <!-- Moving Vector Object following the curve -->
+        <g fill="#ef4444">
+          <!-- Pointer shape facing forward along the path -->
+          <path d="M -8 -6 L 10 0 L -8 6 Z" />
+          
+          <animateMotion dur="4s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#flightPath" />
+          </animateMotion>
+        </g>
+      </svg>
+    </div>
+
+  </div>
+
+</body>
+</html>
